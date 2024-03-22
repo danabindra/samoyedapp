@@ -1,0 +1,61 @@
+name: Comprehensive Deployment Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      deployment:
+        description: 'Deployment Environment'
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+          - uat
+          - test
+      datacenter:
+        description: 'Datacenter Location'
+        required: true
+        type: choice
+        options:
+          - kc
+          - stl
+      env:
+        description: 'Specific Environment'
+        required: true
+        type: choice
+        options:
+          - ta
+          - alts
+          - bks
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Setup Git Config
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create File and Add to New Branch
+        run: |
+          FILENAME="${{ github.event.inputs.deployment }}-${{ github.event.inputs.datacenter }}-${{ github.event.inputs.env }}.txt"
+          echo "hello world" > "$FILENAME"
+          echo "Created file: $FILENAME"
+          
+          # Checkout a new branch named 'traits'
+          git checkout -b traits
+          
+          # Add the new file to the branch
+          git add "$FILENAME"
+          
+          # Commit the file to the branch
+          git commit -m "Add traits file based on workflow inputs"
+          
+          # Push the branch to the remote repository
+          git push origin traits
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
