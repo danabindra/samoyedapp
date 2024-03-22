@@ -1,4 +1,4 @@
-name: Comprehensive Deployment Workflow
+name: Deployment Workflow
 
 on:
   workflow_dispatch:
